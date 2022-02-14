@@ -2,6 +2,8 @@
 
 package lesson2
 
+import java.lang.Math.sqrt
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -108,6 +110,29 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
  */
+
+//решето Эратосфена
+//трудоемкость O(n*log(log(n)))
+//ресурсоемкость O(n)
+//тесты исчерпывающие
+
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    if (limit <= 1) return 0
+    val primes: Array<Boolean> = Array(limit + 1) { true }
+    primes[0] = false
+    primes[1] = false
+    var counter = limit - 1
+    for (i in 2 until primes.size) {
+        if (primes[i]) {
+            var j = 2
+            while (i * j < primes.size) {
+                if (primes[i * j]) {
+                    primes[i * j] = false
+                    counter--
+                }
+                j++
+            }
+        }
+    }
+    return counter
 }

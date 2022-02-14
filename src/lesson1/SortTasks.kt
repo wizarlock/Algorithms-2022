@@ -67,7 +67,7 @@ fun sortTimes(inputName: String, outputName: String) {
  */
 
 //трудоемкость O(n * log(n))
-//ресурсоемкость S(n)
+//ресурсоемкость O(n)
 
 fun sortAddresses(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
@@ -159,8 +159,8 @@ fun sortTemperatures(inputName: String, outputName: String) {
  */
 
 //трудоемкость O(n)
-//ресурсоемкость S(n)
-//по-моему для этой функции тесты исчерпывающие и не нужно добавлять еще
+//ресурсоемкость O(n)
+//тесты исчерпывающие
 
 fun sortSequence(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
