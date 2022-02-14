@@ -2,6 +2,9 @@
 
 package lesson1
 
+import java.io.File
+import java.lang.IllegalArgumentException
+
 /**
  * Сортировка времён
  *
@@ -62,8 +65,33 @@ fun sortTimes(inputName: String, outputName: String) {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+
+//трудоемкость O(n * log(n))
+//ресурсоемкость S(n)
+
 fun sortAddresses(inputName: String, outputName: String) {
-    TODO()
+    val lines = File(inputName).readLines()
+    val writer = File(outputName).bufferedWriter()
+    val checkException = Regex("""([а-яА-ЯёЁ]+ [а-яА-ЯёЁ]+) - ([а-яА-ЯёЁ.\-]+ \d+)""")
+    val map = mutableMapOf<String, MutableList<String>>()
+    for (line in lines) {
+        if (line.matches(checkException)) {
+            val addressAndPerson = line.split(" - ")
+            val address = addressAndPerson[1]
+            val person = addressAndPerson[0]
+            if (map[address] == null) map[address] = mutableListOf(person)
+            else map[address]?.add(person)
+        } else throw IllegalArgumentException()
+    }
+    val newMap = map.toSortedMap(compareBy<String> { it.split(" ")[0] }.thenBy { it.split(" ")[1].toInt() }) //O(nlogn)
+    newMap.map { it.value.sort() }
+
+    for ((address, fullName) in newMap) {
+        val nameToString = fullName.joinToString(", ")
+        writer.write("$address - $nameToString")
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -129,8 +157,37 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  */
+
+//трудоемкость O(n)
+//ресурсоемкость S(n)
+//по-моему для этой функции тесты исчерпывающие и не нужно добавлять еще
+
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val lines = File(inputName).readLines()
+    val writer = File(outputName).bufferedWriter()
+    val map = mutableMapOf<Int, Int>()
+    val frequency: Int
+    val digit: Int
+    val digits = mutableListOf<Int>()
+    if (lines.isNotEmpty()) {
+        for (line in lines)
+            if (map[line.toInt()] == null) map[line.toInt()] = 1
+            else map[line.toInt()] = map[line.toInt()]!! + 1
+        frequency = map.values.maxOrNull()!!
+        for ((key, value) in map.entries)
+            if (frequency == value) digits.add(key)
+        digit = digits.minOrNull()!!
+        for (line in lines)
+            if (line.toInt() != digit) {
+                writer.write("${line.toInt()}")
+                writer.newLine()
+            }
+        for (i in 0 until frequency) {
+            writer.write("$digit")
+            writer.newLine()
+        }
+    }
+    writer.close()
 }
 
 /**
