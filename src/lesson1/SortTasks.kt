@@ -71,14 +71,11 @@ fun sortTimes(inputName: String, outputName: String) {
 
 fun sortAddresses(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
-    val writer = File(outputName).bufferedWriter()
     val checkException = Regex("""([а-яА-ЯёЁ]+ [а-яА-ЯёЁ]+) - ([а-яА-ЯёЁ.\-]+ \d+)""")
     val map = mutableMapOf<String, MutableList<String>>()
     for (line in lines) {
         if (line.matches(checkException)) {
-            val addressAndPerson = line.split(" - ")
-            val address = addressAndPerson[1]
-            val person = addressAndPerson[0]
+            val (person, address) = line.split(" - ")
             if (map[address] == null) map[address] = mutableListOf(person)
             else map[address]?.add(person)
         } else throw IllegalArgumentException()
@@ -86,6 +83,7 @@ fun sortAddresses(inputName: String, outputName: String) {
     val newMap = map.toSortedMap(compareBy<String> { it.split(" ")[0] }.thenBy { it.split(" ")[1].toInt() }) //O(nlogn)
     newMap.map { it.value.sort() }
 
+    val writer = File(outputName).bufferedWriter()
     for ((address, fullName) in newMap) {
         val nameToString = fullName.joinToString(", ")
         writer.write("$address - $nameToString")
@@ -164,19 +162,17 @@ fun sortTemperatures(inputName: String, outputName: String) {
 
 fun sortSequence(inputName: String, outputName: String) {
     val lines = File(inputName).readLines()
-    val writer = File(outputName).bufferedWriter()
     val map = mutableMapOf<Int, Int>()
-    val frequency: Int
-    val digit: Int
-    val digits = mutableListOf<Int>()
+    val writer = File(outputName).bufferedWriter()
     if (lines.isNotEmpty()) {
         for (line in lines)
             if (map[line.toInt()] == null) map[line.toInt()] = 1
             else map[line.toInt()] = map[line.toInt()]!! + 1
-        frequency = map.values.maxOrNull()!!
+        val frequency = map.values.maxOrNull()!!
+        val digits = mutableListOf<Int>()
         for ((key, value) in map.entries)
             if (frequency == value) digits.add(key)
-        digit = digits.minOrNull()!!
+        val digit = digits.minOrNull()!!
         for (line in lines)
             if (line.toInt() != digit) {
                 writer.write("${line.toInt()}")
