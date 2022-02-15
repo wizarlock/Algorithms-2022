@@ -2,8 +2,6 @@
 
 package lesson2
 
-import java.lang.Math.sqrt
-
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -96,8 +94,25 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+
+//трудоемкость O(m * n), где m и n длины строк
+//ресурсоемкость O(m * n), где m и n длины строк
+
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    val table = Array(first.length + 1) { IntArray(second.length + 1) { 0 } }
+    var maxLengthSubstring = 0
+    var maxIndexSubstring = 0
+    for (i in table.indices) {
+        for (j in table[i].indices) {
+            if (i != 0 && j != 0)
+                if (first[i - 1] == second[j - 1]) table[i][j] = table[i - 1][j - 1] + 1
+            if (table[i][j] > maxLengthSubstring) {
+                maxLengthSubstring = table[i][j]
+                maxIndexSubstring = i
+            }
+        }
+    }
+    return first.substring(maxIndexSubstring - maxLengthSubstring, maxIndexSubstring)
 }
 
 /**
