@@ -162,6 +162,26 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+
+        val controlSet = mutableSetOf<Int>()
+        val binarySet = create()
+
+        for (i in 0..100) {
+            controlSet.add(i)
+            binarySet.add(i)
+        }
+        for (i in 0..50) {
+            val randomDigit = (0..100).random()
+            println("Initial set: $controlSet")
+            controlSet.remove(randomDigit)
+            binarySet.remove(randomDigit)
+            println("Control set: $controlSet")
+            println("Removing element $randomDigit from the tree through the iterator...")
+            assertEquals(controlSet, binarySet)
+            controlSet.add(randomDigit)
+            binarySet.add(randomDigit)
+        }
+        println("All clear!")
     }
 
     protected fun doIteratorTest() {
@@ -205,6 +225,17 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+
+        val binarySet = create()
+        assertFalse(
+            binarySet.iterator().hasNext(),
+            "Iterator of an empty tree should not have any next elements."
+        )
+        val binaryIter = binarySet.iterator()
+        assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
+            binaryIter.next()
+        }
+        println("All clear!")
     }
 
     protected fun doIteratorRemoveTest() {
@@ -272,6 +303,26 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+        val controlSet = TreeSet<Int>()
+        val binarySet = create()
+        for (i in 0..100) {
+            controlSet.add(i)
+            binarySet.add(i)
+        }
+        for (i in 0..50) {
+            controlSet.remove(i)
+            var iterator = binarySet.iterator()
+            if (iterator.hasNext()) {
+                iterator.next()
+                iterator.remove()
+            }
+            iterator = binarySet.iterator()
+            val set = TreeSet<Int>()
+            while (iterator.hasNext())
+                set.add(iterator.next())
+            assertEquals(controlSet, set)
+        }
+        println("All clear!")
     }
 
     protected fun doSubSetTest() {

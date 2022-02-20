@@ -129,7 +129,6 @@ fun longestCommonSubstring(first: String, second: String): String {
 //решето Эратосфена
 //трудоемкость O(n*log(log(n)))
 //ресурсоемкость O(n)
-//тесты исчерпывающие
 
 fun calcPrimesNumber(limit: Int): Int {
     if (limit <= 1) return 0
