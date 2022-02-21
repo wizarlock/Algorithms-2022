@@ -82,36 +82,36 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      * Средняя
      */
 
-    //трудоемкость в среднем: O(log n), в худшем: O (n), n - высота дерева
+    //трудоемкость в среднем: O(log n), в худшем: O (n), n - количество узлов
     //ресурсоемкость O(1)
 
     override fun remove(element: T): Boolean {
-        if (!contains(element)) return false
         val (parent, node) = parentAndNode(element)
         when {
-            node!!.left != null && node.right != null -> {
+            node == null || parent == null -> return false
+            node.left != null && node.right != null -> {
                 val (newParent, newNode) = findMin(node)
                 newNode.left = node.left
                 if (newNode != node.right) {
                     newParent.left = newNode.right
                     newNode.right = node.right
                 }
-                parent?.let { replaceNode(newNode, it, node) }
+                replaceNode(newNode, parent, node)
             }
-            node.left == null && node.right == null -> parent?.let { replaceNode(null, it, node) }
-            node.right == null -> parent?.let { replaceNode(node.left, it, node) }
-            else -> parent?.let { replaceNode(node.right, it, node) }
+            node.left == null && node.right == null -> replaceNode(null, parent, node)
+            node.right == null -> replaceNode(node.left, parent, node)
+            else -> replaceNode(node.right, parent, node)
         }
         size--
         return true
     }
 
     private fun findMin(node: Node<T>): Pair<Node<T>, Node<T>> {
-        var newNode = node.right
+        var newNode = node.right!!
         var newParent = node
-        while (newNode!!.left != null) {
+        while (newNode.left != null) {
             newParent = newNode
-            newNode = newNode.left
+            newNode = newNode.left!!
         }
         return Pair(newParent, newNode)
     }
@@ -127,12 +127,13 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
     private fun parentAndNode(element: T): Pair<Node<T>?, Node<T>?> {
         var parent = root
         var node = root
-        while (node?.let { element.compareTo(it.value) } != 0) {
-            val comparison = node?.let { element.compareTo(it.value) }
+        while (node != null && element != node.value) {
+            val comparison = element.compareTo(node.value)
             parent = node
-            node = if (comparison!! < 0) node!!.left
-            else node!!.right
+            node = if (comparison < 0) node.left
+            else node.right
         }
+        if (node == null) parent = null
         return Pair(parent, node)
     }
 
