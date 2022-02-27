@@ -1,5 +1,6 @@
 package lesson4
 
+import java.lang.IllegalStateException
 import java.util.*
 
 /**
@@ -70,8 +71,47 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
      *
      * Сложная
      */
-    override fun iterator(): MutableIterator<String> {
-        TODO()
-    }
 
+    //тот же BinarySearchTreeIterator, только заполнение stack другое (заполняем сразу, так как порядок не имеет значения)
+    override fun iterator(): MutableIterator<String> = TrieIterator()
+
+    inner class TrieIterator internal constructor() : MutableIterator<String> {
+        private var stack = ArrayDeque<String>()
+
+        init {
+            initStack(root, "")
+        }
+
+        //пока не найдем '0' рекурсивно перебираем детей, далее вернемся назад и будем снова искать '0', перебирая других детей
+        private fun initStack(node: Node, str: String) {
+            for ((char, childNode) in node.children)
+                if (char != 0.toChar()) initStack(childNode, str + char)
+                else stack.push(str)
+        }
+
+        //трудоемкость: O(1)
+        //ресурсоемкость O(1)
+
+        override fun hasNext(): Boolean = stack.isNotEmpty()
+
+        private var next: String = ""
+
+        //трудоемкость: O(1)
+        //ресурсоемкость O(1)
+
+        override fun next(): String {
+            if (!hasNext()) throw NoSuchElementException()
+            next = stack.pop()
+            return next
+        }
+
+        //трудоемкость: O(logn)
+        //ресурсоемкость O(1)
+
+        override fun remove() {
+            if (next == "") throw IllegalStateException()
+            remove(next)
+            next = ""
+        }
+    }
 }

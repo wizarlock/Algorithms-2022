@@ -321,8 +321,8 @@ abstract class AbstractBinarySearchTreeTest {
             while (iterator.hasNext())
                 set.add(iterator.next())
             assertEquals(controlSet, set)
+            println("All clear!")
         }
-        println("All clear!")
     }
 
     protected fun doSubSetTest() {

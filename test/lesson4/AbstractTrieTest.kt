@@ -110,6 +110,17 @@ abstract class AbstractTrieTest {
             }
             println("All clear!")
         }
+
+        val binarySet = create()
+        assertFalse(
+            binarySet.iterator().hasNext(),
+            "Iterator of an empty tree should not have any next elements."
+        )
+        val binaryIter = binarySet.iterator()
+        assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
+            binaryIter.next()
+        }
+        println("All clear!")
     }
 
     protected fun doIteratorRemoveTest() {
@@ -171,6 +182,31 @@ abstract class AbstractTrieTest {
             }
             println("All clear!")
         }
-    }
+        println("My tests!")
+        val listOfString = mutableListOf<String>()
+        val controlSet = mutableSetOf<String>()
+        val binarySet = create()
+        for (i in 0..20) {
+            val string = random.nextString("abcdefghijklmnopqrstuvwxyz", 1, 30)
+            listOfString.add(string)
+            controlSet.add(string)
+            binarySet.add(string)
+        }
 
+        for (i in 0..10) {
+            controlSet.remove(listOfString[i])
+            val iterator = binarySet.iterator()
+            while (iterator.hasNext()) {
+                val element = iterator.next()
+                if (element == listOfString[i]) {
+                    println("Control set: $controlSet")
+                    println("Removing element \"$element\" from trie set through the iterator...")
+                    iterator.remove()
+                    assertEquals(controlSet, binarySet)
+                    println("All clear!")
+                    break
+                }
+            }
+        }
+    }
 }
