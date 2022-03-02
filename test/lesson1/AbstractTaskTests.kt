@@ -86,6 +86,9 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+
+        println("My tests!")
+
         try {
             sortAddresses("input/addr_in4.txt", "temp.txt")
             assertFileContent("temp.txt", File("input/addr_out4.txt").readLines())
@@ -310,6 +313,9 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+
+        println("My tests!")
+
         try {
             sortSequence("input/seq_in6.txt", "temp.txt")
             assertFileContent(

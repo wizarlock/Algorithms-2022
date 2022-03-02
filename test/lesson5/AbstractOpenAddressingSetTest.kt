@@ -77,6 +77,24 @@ abstract class AbstractOpenAddressingSetTest {
                 )
             }
         }
+
+        println("My tests!")
+
+        val bitsNumber = random.nextInt(4) + 6
+        val openAddressingSet = create<Int>(bitsNumber)
+        for (i in 0..50) {
+            openAddressingSet += i
+        }
+        for (i in 10..25) {
+            assertTrue(
+                openAddressingSet.remove(i),
+                "An element wasn't removed contrary to expected."
+            )
+            assertFalse(
+                i in openAddressingSet,
+                "A supposedly removed element is still in the set."
+            )
+        }
     }
 
     protected fun doIteratorTest() {
@@ -119,6 +137,31 @@ abstract class AbstractOpenAddressingSetTest {
             }
             println("All clear!")
         }
+
+        println("My tests!")
+        val controlSet = sortedSetOf<String>()
+        for (i in 1..10) {
+            val string = random.nextString("abcdefghijklmnopqrstuvwxyz", 1, 15)
+            controlSet.add(string)
+        }
+        val openAddressingSet = create<String>(random.nextInt(6) + 4)
+        assertFalse(
+            openAddressingSet.iterator().hasNext(),
+            "Iterator of an empty set should not have any next elements."
+        )
+        for (element in controlSet) {
+            openAddressingSet += element
+        }
+        val iterator1 = openAddressingSet.iterator()
+        val iterator2 = openAddressingSet.iterator()
+        println("Checking if calling hasNext() changes the state of the iterator...")
+        while (iterator1.hasNext()) {
+            assertEquals(
+                iterator2.next(), iterator1.next(),
+                "Calling TrieIterator.hasNext() changes the state of the iterator."
+            )
+        }
+        println("All clear!")
     }
 
     protected fun doIteratorRemoveTest() {
@@ -175,6 +218,34 @@ abstract class AbstractOpenAddressingSetTest {
                 )
             }
             println("All clear!")
+        }
+
+        println("My tests!")
+
+        val listOfString = mutableListOf<String>()
+        val controlSet = mutableSetOf<String>()
+        val openAddressingSet = create<String>(random.nextInt(6) + 4)
+        for (i in 0..9) {
+            val string = random.nextString("abcdefghijklmnopqrstuvwxyz", 1, 15)
+            listOfString.add(string)
+            controlSet.add(string)
+            openAddressingSet.add(string)
+        }
+
+        for (i in 0..5) {
+            controlSet.remove(listOfString[i])
+            val iterator = openAddressingSet.iterator()
+            while (iterator.hasNext()) {
+                val element = iterator.next()
+                if (element == listOfString[i]) {
+                    println("Control set: $controlSet")
+                    println("Removing element \"$element\" from trie set through the iterator...")
+                    iterator.remove()
+                    assertEquals(controlSet, openAddressingSet)
+                    println("All clear!")
+                    break
+                }
+            }
         }
     }
 }

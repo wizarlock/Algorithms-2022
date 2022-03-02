@@ -163,6 +163,8 @@ abstract class AbstractBinarySearchTreeTest {
             println("All clear!")
         }
 
+        println("My tests!")
+
         val controlSet = mutableSetOf<Int>()
         val binarySet = create()
 
@@ -226,14 +228,29 @@ abstract class AbstractBinarySearchTreeTest {
             println("All clear!")
         }
 
+        println("My tests!")
+
+        val controlSet = TreeSet<Int>()
+        for (i in 1..50) {
+            controlSet.add(random.nextInt(1000))
+        }
+        println("Control set: $controlSet")
         val binarySet = create()
         assertFalse(
             binarySet.iterator().hasNext(),
             "Iterator of an empty tree should not have any next elements."
         )
-        val binaryIter = binarySet.iterator()
-        assertFailsWith<NoSuchElementException>("Something was supposedly returned after the elements ended") {
-            binaryIter.next()
+        for (element in controlSet) {
+            binarySet += element
+        }
+        val iterator1 = binarySet.iterator()
+        val iterator2 = binarySet.iterator()
+        println("Checking if calling hasNext() changes the state of the iterator...")
+        while (iterator1.hasNext()) {
+            assertEquals(
+                iterator2.next(), iterator1.next(),
+                "Calling BinarySearchTreeIterator.hasNext() changes the state of the iterator."
+            )
         }
         println("All clear!")
     }
@@ -303,6 +320,9 @@ abstract class AbstractBinarySearchTreeTest {
             }
             println("All clear!")
         }
+
+        println("My tests!")
+
         val controlSet = TreeSet<Int>()
         val binarySet = create()
         for (i in 0..100) {

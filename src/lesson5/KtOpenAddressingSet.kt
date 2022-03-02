@@ -1,8 +1,12 @@
 package lesson5
 
+import java.lang.IllegalStateException
+import java.util.NoSuchElementException
+
 /**
  * Множество(таблица) с открытой адресацией на 2^bits элементов без возможности роста.
  */
+
 class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T>() {
     init {
         require(bits in 2..31)
@@ -13,6 +17,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
     private val storage = Array<Any?>(capacity) { null }
 
     override var size: Int = 0
+
+    private object DELETED
 
     /**
      * Индекс в таблице, начиная с которого следует искать данный элемент
@@ -51,7 +57,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         val startingIndex = element.startingIndex()
         var index = startingIndex
         var current = storage[index]
-        while (current != null) {
+        while (current != DELETED && current != null) {
             if (current == element) {
                 return false
             }
@@ -75,8 +81,23 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя
      */
+
+    //трудоемкость: O(n)
+    //ресурсоемкость O(1)
+
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        var index = element.startingIndex()
+        var current = storage[index]
+        while (current != null) {
+            if (current == element) {
+                storage[index] = DELETED
+                size--
+                return true
+            }
+            index = (index + 1) % capacity
+            current = storage[index]
+        }
+        return false
     }
 
     /**
@@ -89,7 +110,47 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя (сложная, если поддержан и remove тоже)
      */
-    override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+    override fun iterator(): MutableIterator<T> = OASIterator()
+
+    inner class OASIterator internal constructor() : MutableIterator<T> {
+        var numberOfElements = 0
+        var idx = 0
+
+        //трудоемкость: O(1)
+        //ресурсоемкость O(1)
+
+        override fun hasNext(): Boolean = size > numberOfElements
+
+        private var next: T? = null
+
+        //трудоемкость: O(n)
+        //ресурсоемкость O(1)
+
+        override fun next(): T {
+            if (!hasNext()) throw NoSuchElementException()
+            idx = findIndex(idx)
+            next = storage[idx] as T
+            numberOfElements++
+            idx++
+            return next as T
+        }
+
+        private fun findIndex(index: Int): Int {
+            var idx = index
+            while (storage[idx] == null || storage[idx] == DELETED)
+                idx++
+            return idx
+        }
+
+        //трудоемкость: O(1)
+        //ресурсоемкость O(1)
+
+        override fun remove() {
+            if (next == null) throw IllegalStateException()
+            numberOfElements--
+            size--
+            storage[idx - 1] = DELETED
+            next = null
+        }
     }
 }
