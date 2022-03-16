@@ -2,6 +2,9 @@
 
 package lesson6
 
+import lesson6.impl.GraphBuilder
+import java.util.ArrayDeque
+
 /**
  * Эйлеров цикл.
  * Средняя
@@ -28,8 +31,66 @@ package lesson6
  * Справка: Эйлеров цикл -- это цикл, проходящий через все рёбра
  * связного графа ровно по одному разу
  */
+
+//трудоемкость: O(n)
+//ресурсоемкость O(n)
+//здесь n - кол-во вершин
+
 fun Graph.findEulerLoop(): List<Graph.Edge> {
-    TODO()
+    val eulerLoop = mutableListOf<Graph.Edge>()
+    if (!checkEuler()) return eulerLoop
+    val stack = ArrayDeque<Graph.Vertex>()
+    stack.push(vertices.first())
+    val allEdges = edges
+    while (stack.isNotEmpty()) {
+        val curVertex = stack.peek()
+        for (vertex in vertices) {
+            val curEdge = getConnection(vertex, curVertex)
+            if (curEdge != null && allEdges.contains(curEdge)) {  //нашли ребро, по которому ещё не прошли
+                stack.push(vertex) //добавили новую вершину в стек
+                allEdges.remove(curEdge)
+                break
+            }
+        }
+        if (curVertex == stack.peek()) {
+            stack.pop()
+            getConnection(curVertex, stack.peek())?.let { eulerLoop.add(it) }
+        }
+    }
+    return eulerLoop
+}
+
+//Перед запуском алгоритма необходимо проверить граф на эйлеровость
+//Для того, чтобы граф был эйлеровым необходимо чтобы:
+//Все вершины имели четную степень.
+//Все компоненты связности кроме, может быть одной, не содержали ребер.
+fun Graph.checkEuler(): Boolean {
+    if (vertices.isEmpty()) return false
+    for (vertex in vertices) {
+        if (getNeighbors(vertex).size % 2 != 0) return false //проверка первого пункта
+    }
+    //в visited будет находиться компонент связи, у которого есть ребра
+    var visited = ArrayDeque<Graph.Vertex>()
+    for (vertex in vertices) {
+        if (getNeighbors(vertex).size != 0) {
+            visited = dfs(vertex, ArrayDeque<Graph.Vertex>())
+            break
+        }
+    }
+    //если в visited нет вершины, она имеет соседние вершины, то это другая компонентная связь, содержащая вершины
+    for (vertex in vertices)
+        if (getNeighbors(vertex).size != 0 && !visited.contains(vertex)) return false //проверка второго пункта
+    return true
+}
+
+fun Graph.dfs(vertex: Graph.Vertex, visited: ArrayDeque<Graph.Vertex>): ArrayDeque<Graph.Vertex> {
+    for (curVertex in getNeighbors(vertex)) {
+        if (!visited.contains(curVertex)) {
+            visited.push(curVertex)
+            dfs(curVertex, visited)
+        }
+    }
+    return visited
 }
 
 /**
@@ -60,8 +121,32 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
  * |
  * J ------------ K
  */
+
+//трудоемкость: O(n)
+//ресурсоемкость O(n)
+//здесь n - кол-во вершин
+
 fun Graph.minimumSpanningTree(): Graph {
-    TODO()
+    val graph = GraphBuilder()
+    if (!isConnected()) return graph.build()
+    for (vertex in vertices) graph.addVertex(vertex.name)
+    for ((vertex, vertexInfo) in shortestPath(vertices.first()))
+        vertexInfo.prev?.let { graph.addConnection(it, vertex, 1) }
+    return graph.build()
+}
+
+fun Graph.isConnected(): Boolean {
+    if (vertices.isEmpty()) return false
+    var visited = ArrayDeque<Graph.Vertex>()
+    for (vertex in vertices) {
+        if (getNeighbors(vertex).size != 0) {
+            visited = dfs(vertex, ArrayDeque<Graph.Vertex>())
+            break
+        }
+    }
+    for (vertex in vertices)
+        if (!visited.contains(vertex)) return false
+    return true
 }
 
 /**

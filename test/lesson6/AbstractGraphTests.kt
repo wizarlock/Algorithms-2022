@@ -121,6 +121,120 @@ abstract class AbstractGraphTests {
         }.build()
         val loop3 = graph3.findEulerLoop()
         loop3.assert(shouldExist = false, graph = graph3)
+
+        println("My tests!")
+
+        val myGraph = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val с = addVertex("С")
+            addConnection(a, b)
+            addConnection(a, с)
+            addConnection(с, b)
+
+            val d = addVertex("d")
+            val e = addVertex("e")
+            addConnection(d, e)
+        }.build()
+        val myLoop = myGraph.findEulerLoop()
+        assertTrue(myLoop.isEmpty())
+
+        val newMyGraph = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val с = addVertex("С")
+            addConnection(a, b)
+            addConnection(a, с)
+            addConnection(с, b)
+
+            val d = addVertex("d")
+            val e = addVertex("e")
+        }.build()
+        val newMyLoop = newMyGraph.findEulerLoop()
+        newMyLoop.assert(shouldExist = true, graph = newMyGraph)
+        // не обладаю талантом красиво изображать фигуры симолами, но надеюсь понятно
+        //       B ----- C
+        //      /  \   /   \
+        //    A ---- J ---- O    K    L
+        //     \   /   \  /
+        //       F ---- I
+
+        val interestingGraph = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("С")
+            val o = addVertex("O")
+            val i = addVertex("I")
+            val f = addVertex("F")
+            val j = addVertex("J")
+            val k = addVertex("K")
+            val l = addVertex("L")
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(c, o)
+            addConnection(o, i)
+            addConnection(i, f)
+            addConnection(f, a)
+            addConnection(a, j)
+            addConnection(b, j)
+            addConnection(c, j)
+            addConnection(o, j)
+            addConnection(i, j)
+            addConnection(f, j)
+        }.build()
+        val interestingLoop = interestingGraph.findEulerLoop()
+        interestingLoop.assert(shouldExist = false, graph = interestingGraph)
+
+        //       B ---- C
+        //     /          \
+        //    A            O   K--L
+        //     \          /
+        //       F ---- I
+
+        val newInterestingGraph = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("С")
+            val o = addVertex("O")
+            val i = addVertex("I")
+            val f = addVertex("F")
+            val k = addVertex("K")
+            val l = addVertex("L")
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(c, o)
+            addConnection(o, i)
+            addConnection(i, f)
+            addConnection(f, a)
+            addConnection(k, l)
+        }.build()
+        val newInterestingLoop = newInterestingGraph.findEulerLoop()
+        newInterestingLoop.assert(shouldExist = false, graph = newInterestingGraph)
+
+        //       B ---- C
+        //     /          \
+        //    A            O   K   L
+        //     \          /
+        //       F ---- I
+
+        val lastInterestingGraph = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("С")
+            val o = addVertex("O")
+            val i = addVertex("I")
+            val f = addVertex("F")
+            val k = addVertex("K")
+            val l = addVertex("L")
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(c, o)
+            addConnection(o, i)
+            addConnection(i, f)
+            addConnection(f, a)
+        }.build()
+        val lastInterestingLoop = lastInterestingGraph.findEulerLoop()
+        lastInterestingLoop.assert(shouldExist = true, graph = lastInterestingGraph)
     }
 
     fun minimumSpanningTree(minimumSpanningTree: Graph.() -> Graph) {
@@ -181,6 +295,59 @@ abstract class AbstractGraphTests {
         val tree3 = graph3.minimumSpanningTree()
         assertEquals(4, tree3.edges.size)
         assertEquals(4, tree3.findBridges().size)
+
+        println("My tests!")
+
+        // A --- B
+        // |     |
+        // C --- D
+        val graph4 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            addConnection(a, b)
+            addConnection(b, d)
+            addConnection(d, c)
+            addConnection(d, a)
+        }.build()
+        val tree4 = graph4.minimumSpanningTree()
+        assertEquals(3, tree4.edges.size)
+        assertEquals(3, tree4.findBridges().size)
+
+        // A --- B
+        // |     |   K
+        // C --- D
+        val graph5 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val k = addVertex("K")
+            addConnection(a, b)
+            addConnection(b, d)
+            addConnection(d, c)
+            addConnection(d, a)
+        }.build()
+        assertTrue(graph5.minimumSpanningTree().edges.isEmpty())
+
+        // A --- B --- K
+        //    \  |  /
+        //       D
+        val graph6 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val d = addVertex("D")
+            val k = addVertex("K")
+            addConnection(a, b)
+            addConnection(b, d)
+            addConnection(b, k)
+            addConnection(d, k)
+            addConnection(d, a)
+        }.build()
+        val tree6 = graph6.minimumSpanningTree()
+        assertEquals(3, tree6.edges.size)
+        assertEquals(3, tree6.findBridges().size)
     }
 
     fun largestIndependentVertexSet(largestIndependentVertexSet: Graph.() -> Set<Graph.Vertex>) {
